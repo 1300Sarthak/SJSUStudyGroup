@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --sjsu-blue: #0055a2;
+  --sjsu-gold: #e5a823;
+}
+
+body {
+  @apply antialiased text-gray-800;
+}
+
+/* Custom button styles */
+.btn {
+  @apply px-4 py-2 rounded-lg transition-colors;
+}
+
+.btn-primary {
+  @apply bg-sjsu-blue text-white hover:bg-blue-700;
+}
+
+.btn-secondary {
+  @apply bg-sjsu-gold text-white hover:bg-yellow-500;
+}
