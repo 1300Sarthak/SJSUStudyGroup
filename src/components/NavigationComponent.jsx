@@ -1,5 +1,6 @@
 import React from 'react';
-import { navigationItems } from '/Users/sarthak/Documents/sjsu-study-group/src/data/getData';
+import { navigationItems } from "../data/getData";
+
 
 class NavigationComponent extends React.Component {
   render() {
