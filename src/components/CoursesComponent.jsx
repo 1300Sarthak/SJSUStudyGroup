@@ -1,6 +1,6 @@
 import React from 'react';
 import { Book, ChevronRight } from 'lucide-react';
-import { geCategories } from "../data/getData";
+import { geCategories } from '../data/getData';
 
 class CoursesComponent extends React.Component {
   constructor(props) {
