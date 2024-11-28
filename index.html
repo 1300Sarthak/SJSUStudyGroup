@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SJSU Study Group Finder - Profile</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Appwrite SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="#" class="logo">SJSU Study Group Finder</a>
+        <div class="search-container">
+            <input type="text" class="search-bar" placeholder="Search courses...">
+        </div>
+        <div id="profile-section">
+            <!-- Login/Profile buttons will be dynamically inserted here -->
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Login Form -->
+        <div id="login-section" class="auth-container">
+            <h2>Sign In</h2>
+            <div class="auth-buttons">
+                <button id="google-login" class="auth-button google">
+                    <img src="https://www.google.com/favicon.ico" alt="Google Icon">
+                    Continue with Google
+                </button>
+                <p class="auth-note">Please use your SJSU email (@sjsu.edu)</p>
+            </div>
+        </div>
+
+        <!-- Profile Content -->
+        <div id="profile-content" class="profile-container" style="display: none;">
+            <div class="profile-header">
+                <img id="profile-image" alt="Profile Picture" class="profile-pic">
+                <div class="profile-info">
+                    <h2 id="profile-name"></h2>
+                    <p id="profile-email"></p>
+                </div>
+            </div>
+            
+            <div class="profile-sections">
+                <div class="profile-section">
+                    <h3>My Study Groups</h3>
+                    <div id="study-groups-list" class="study-groups-list">
+                        <p class="empty-state">No study groups joined yet</p>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <h3>My Courses</h3>
+                    <div id="courses-list" class="courses-list">
+                        <p class="empty-state">No courses enrolled yet</p>
+                    </div>
+                </div>
+            </div>
+
+            <button id="logout-btn" class="logout-button">Sign Out</button>
+        </div>
+
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="loading-spinner" style="display: none;">
+            <div class="spinner"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
