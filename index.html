@@ -1,13 +1,149 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>SJSU Study Group</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
-  </body>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SJSU Study Group Finder</title>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Appwrite SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="#" class="logo">SJSU Study Group Finder</a>
+        <div class="search-container">
+            <input type="text" class="search-bar" placeholder="Search courses...">
+        </div>
+        <div id="profile-section">
+            <button id="login-btn" class="profile-btn">Sign In</button>
+        </div>
+    </nav>
+
+    <!-- Main Content Container -->
+    <div id="main-content" class="container">
+        <aside class="sidebar">
+            <a href="#" class="sidebar-item">
+                <span>📚</span>
+                <span>Courses</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <span>👥</span>
+                <span>Study Groups</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <span>📅</span>
+                <span>Schedule</span>
+            </a>
+            <a href="#" class="sidebar-item">
+                <span>💬</span>
+                <span>Messages</span>
+            </a>
+        </aside>
+
+        <main class="main-content">
+            <div class="area-card">
+                <div class="area-title">
+                    <div class="area-icon blue-bg">📘</div>
+                    <div class="area-info">
+                        <div class="area-name">Area A</div>
+                        <div class="area-description">English Language Communication and Critical Thinking</div>
+                    </div>
+                </div>
+                <span class="units">9 units</span>
+                <a href="#" class="view-courses">View Courses ›</a>
+            </div>
+
+            <div class="area-card">
+                <div class="area-title">
+                    <div class="area-icon green-bg">📗</div>
+                    <div class="area-info">
+                        <div class="area-name">Area B</div>
+                        <div class="area-description">Scientific Inquiry and Quantitative Reasoning</div>
+                    </div>
+                </div>
+                <span class="units">9 units</span>
+                <a href="#" class="view-courses">View Courses ›</a>
+            </div>
+
+            <div class="area-card">
+                <div class="area-title">
+                    <div class="area-icon purple-bg">📓</div>
+                    <div class="area-info">
+                        <div class="area-name">Area C</div>
+                        <div class="area-description">Arts and Humanities</div>
+                    </div>
+                </div>
+                <span class="units">9 units</span>
+                <a href="#" class="view-courses">View Courses ›</a>
+            </div>
+
+            <div class="area-card">
+                <div class="area-title">
+                    <div class="area-icon orange-bg">📙</div>
+                    <div class="area-info">
+                        <div class="area-name">Area D</div>
+                        <div class="area-description">Social Sciences</div>
+                    </div>
+                </div>
+                <span class="units">6 units</span>
+                <a href="#" class="view-courses">View Courses ›</a>
+            </div>
+        </main>
+    </div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal">
+        <div class="modal-content">
+            <div class="auth-container">
+                <h2>Sign In</h2>
+                <p class="auth-description">Please sign in with your SJSU email</p>
+                <button id="google-login" class="auth-button google">
+                    <img src="https://www.google.com/favicon.ico" alt="Google Icon">
+                    Continue with Google
+                </button>
+                <p class="auth-note">Only @sjsu.edu emails are allowed</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profile-modal" class="modal">
+        <div class="modal-content">
+            <div class="profile-container">
+                <div class="profile-header">
+                    <img id="profile-image" alt="Profile Picture" class="profile-pic">
+                    <div class="profile-info">
+                        <h2 id="profile-name"></h2>
+                        <p id="profile-email"></p>
+                    </div>
+                </div>
+                
+                <div class="profile-sections">
+                    <div class="profile-section">
+                        <h3>My Study Groups</h3>
+                        <div id="study-groups-list" class="study-groups-list">
+                            <p class="empty-state">No study groups joined yet</p>
+                        </div>
+                    </div>
+
+                    <div class="profile-section">
+                        <h3>My Courses</h3>
+                        <div id="courses-list" class="courses-list">
+                            <p class="empty-state">No courses enrolled yet</p>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="logout-btn" class="logout-button">Sign Out</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="loading-spinner" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
 </html>
