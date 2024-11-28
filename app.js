@@ -5,8 +5,8 @@ const databases = new Appwrite.Databases(client);
 
 // Your Appwrite configuration
 client
-    .setEndpoint('YOUR_APPWRITE_ENDPOINT') // Your Appwrite Endpoint
-    .setProject('YOUR_PROJECT_ID');        // Your project ID
+    .setEndpoint('https://cloud.appwrite.io/v1') // Your Appwrite Endpoint
+    .setProject('67482b9b0034a4ee8ef0');        // Your project ID
 
 // DOM Elements
 const loginBtn = document.getElementById('login-btn');
