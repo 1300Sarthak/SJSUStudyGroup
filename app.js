@@ -1,27 +1,59 @@
 // Initialize Appwrite
 const client = new Appwrite.Client();
 const account = new Appwrite.Account(client);
+const databases = new Appwrite.Databases(client);
 
 // Your Appwrite configuration
 client
     .setEndpoint('YOUR_APPWRITE_ENDPOINT') // Your Appwrite Endpoint
     .setProject('YOUR_PROJECT_ID');        // Your project ID
 
-// Elements
-const loginSection = document.getElementById('login-section');
-const profileContent = document.getElementById('profile-content');
-const googleLoginBtn = document.getElementById('google-login');
+// DOM Elements
+const loginBtn = document.getElementById('login-btn');
 const logoutBtn = document.getElementById('logout-btn');
+const authModal = document.getElementById('auth-modal');
+const profileModal = document.getElementById('profile-modal');
+const googleLoginBtn = document.getElementById('google-login');
 const loadingSpinner = document.getElementById('loading-spinner');
+const profileSection = document.getElementById('profile-section');
 
-// Show loading spinner
-function showLoading() {
-    loadingSpinner.style.display = 'flex';
+// State management
+let currentUser = null;
+
+// Show/Hide Loading Spinner
+const showLoading = () => loadingSpinner.style.display = 'flex';
+const hideLoading = () => loadingSpinner.style.display = 'none';
+
+// Modal Management
+function showModal(modal) {
+    modal.style.display = 'block';
+    document.body.style.overflow = 'hidden';
 }
 
-// Hide loading spinner
-function hideLoading() {
-    loadingSpinner.style.display = 'none';
+function hideModal(modal) {
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto';
+}
+
+// Close modals when clicking outside
+window.onclick = (event) => {
+    if (event.target === authModal) {
+        hideModal(authModal);
+    }
+    if (event.target === profileModal) {
+        hideModal(profileModal);
+    }
+};
+
+// Update UI based on auth state
+function updateUIForAuth(user) {
+    if (user) {
+        loginBtn.textContent = user.name;
+        loginBtn.onclick = () => showModal(profileModal);
+    } else {
+        loginBtn.textContent = 'Sign In';
+        loginBtn.onclick = () => showModal(authModal);
+    }
 }
 
 // Initialize the page
@@ -29,20 +61,21 @@ async function init() {
     showLoading();
     try {
         // Check if user is already logged in
-        const user = await account.get();
-        await updateProfileUI(user);
-        loginSection.style.display = 'none';
-        profileContent.style.display = 'block';
+        currentUser = await account.get();
+        await updateProfileUI(currentUser);
+        updateUIForAuth(currentUser);
     } catch (error) {
-        loginSection.style.display = 'block';
-        profileContent.style.display = 'none';
+        console.log('No active session');
+        updateUIForAuth(null);
     } finally {
         hideLoading();
     }
 }
 
-// Update UI with user profile information
+// Update Profile UI
 async function updateProfileUI(user) {
+    if (!user) return;
+
     // Update profile information
     document.getElementById('profile-name').textContent = user.name;
     document.getElementById('profile-email').textContent = user.email;
@@ -51,27 +84,87 @@ async function updateProfileUI(user) {
     if (user.prefs && user.prefs.profileImage) {
         document.getElementById('profile-image').src = user.prefs.profileImage;
     } else {
-        // Set default avatar or generate one from initials
+        // Generate avatar from initials
         const initials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
         document.getElementById('profile-image').src = `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&background=random`;
     }
 
-    // Fetch and display user's study groups
-    await loadStudyGroups();
+    // Load study groups and courses
+    await Promise.all([
+        loadStudyGroups(user.$id),
+        loadCourses(user.$id)
+    ]);
+}
 
-    // Fetch and display user's courses
-    await loadCourses();
+// Load Study Groups
+async function loadStudyGroups(userId) {
+    const studyGroupsList = document.getElementById('study-groups-list');
+    try {
+        const response = await databases.listDocuments(
+            'YOUR_DATABASE_ID',
+            'YOUR_STUDY_GROUPS_COLLECTION_ID',
+            [
+                Appwrite.Query.equal('userId', userId)
+            ]
+        );
+
+        if (response.documents.length > 0) {
+            studyGroupsList.innerHTML = response.documents.map(group => `
+                <div class="study-group-item">
+                    <h4>${group.name}</h4>
+                    <p>${group.course}</p>
+                    <span class="member-count">${group.memberCount} members</span>
+                </div>
+            `).join('');
+        } else {
+            studyGroupsList.innerHTML = '<p class="empty-state">No study groups joined yet</p>';
+        }
+    } catch (error) {
+        console.error('Error loading study groups:', error);
+        studyGroupsList.innerHTML = '<p class="empty-state">Error loading study groups</p>';
+    }
+}
+
+// Load Courses
+async function loadCourses(userId) {
+    const coursesList = document.getElementById('courses-list');
+    try {
+        const response = await databases.listDocuments(
+            'YOUR_DATABASE_ID',
+            'YOUR_COURSES_COLLECTION_ID',
+            [
+                Appwrite.Query.equal('userId', userId)
+            ]
+        );
+
+        if (response.documents.length > 0) {
+            coursesList.innerHTML = response.documents.map(course => `
+                <div class="course-item">
+                    <h4>${course.name}</h4>
+                    <p>${course.description}</p>
+                    <span class="course-status">${course.status}</span>
+                </div>
+            `).join('');
+        } else {
+            coursesList.innerHTML = '<p class="empty-state">No courses enrolled yet</p>';
+        }
+    } catch (error) {
+        console.error('Error loading courses:', error);
+        coursesList.innerHTML = '<p class="empty-state">Error loading courses</p>';
+    }
 }
 
 // Handle Google Login
 googleLoginBtn.addEventListener('click', async () => {
     try {
         showLoading();
+        hideModal(authModal);
+        
         // Create OAuth2 session with Google
-        account.createOAuth2Session(
+        await account.createOAuth2Session(
             'google',
-            'YOUR_SUCCESS_URL',
-            'YOUR_FAILURE_URL',
+            'YOUR_SUCCESS_URL',  // Replace with your success URL
+            'YOUR_FAILURE_URL',  // Replace with your failure URL
             ['email', 'profile']
         );
     } catch (error) {
@@ -86,8 +179,9 @@ logoutBtn.addEventListener('click', async () => {
     try {
         showLoading();
         await account.deleteSession('current');
-        loginSection.style.display = 'block';
-        profileContent.style.display = 'none';
+        currentUser = null;
+        updateUIForAuth(null);
+        hideModal(profileModal);
     } catch (error) {
         console.error('Logout error:', error);
         alert('Failed to logout. Please try again.');
@@ -96,61 +190,19 @@ logoutBtn.addEventListener('click', async () => {
     }
 });
 
-// Load user's study groups
-async function loadStudyGroups() {
-    const studyGroupsList = document.getElementById('study-groups-list');
-    try {
-        // Replace with your actual database query
-        const databases = new Appwrite.Databases(client);
-        const response = await databases.listDocuments(
-            'YOUR_DATABASE_ID',
-            'YOUR_STUDY_GROUPS_COLLECTION_ID',
-            [
-                Appwrite.Query.equal('userId', account.current.id)
-            ]
-        );
-
-        if (response.documents.length > 0) {
-            studyGroupsList.innerHTML = response.documents.map(group => `
-                <div class="study-group-item">
-                    <h4>${group.name}</h4>
-                    <p>${group.course}</p>
-                </div>
-            `).join('');
+// Event Listeners for Area Cards
+document.querySelectorAll('.area-card').forEach(card => {
+    card.querySelector('.view-courses').addEventListener('click', async (e) => {
+        e.preventDefault();
+        if (!currentUser) {
+            showModal(authModal);
+            return;
         }
-    } catch (error) {
-        console.error('Error loading study groups:', error);
-        studyGroupsList.innerHTML = '<p class="empty-state">Error loading study groups</p>';
-    }
-}
+        // Handle viewing courses for the specific area
+        const areaName = card.querySelector('.area-name').textContent;
+        // Add your logic here to show courses for the selected area
+    });
+});
 
-// Load user's courses
-async function loadCourses() {
-    const coursesList = document.getElementById('courses-list');
-    try {
-        // Replace with your actual database query
-        const databases = new Appwrite.Databases(client);
-        const response = await databases.listDocuments(
-            'YOUR_DATABASE_ID',
-            'YOUR_COURSES_COLLECTION_ID',
-            [
-                Appwrite.Query.equal('userId', account.current.id)
-            ]
-        );
-
-        if (response.documents.length > 0) {
-            coursesList.innerHTML = response.documents.map(course => `
-                <div class="course-item">
-                    <h4>${course.name}</h4>
-                    <p>${course.description}</p>
-                </div>
-            `).join('');
-        }
-    } catch (error) {
-        console.error('Error loading courses:', error);
-        coursesList.innerHTML = '<p class="empty-state">Error loading courses</p>';
-    }
-}
-
-// Initialize the page when DOM is loaded
+// Initialize the application
 document.addEventListener('DOMContentLoaded', init);
