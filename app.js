@@ -101,8 +101,8 @@ async function loadStudyGroups(userId) {
     const studyGroupsList = document.getElementById('study-groups-list');
     try {
         const response = await databases.listDocuments(
-            'YOUR_DATABASE_ID',
-            'YOUR_STUDY_GROUPS_COLLECTION_ID',
+            '674837fa0025a0df0540', //your database ID
+            '6748385600386b5ae788', //your study group ID
             [
                 Appwrite.Query.equal('userId', userId)
             ]
@@ -130,8 +130,8 @@ async function loadCourses(userId) {
     const coursesList = document.getElementById('courses-list');
     try {
         const response = await databases.listDocuments(
-            'YOUR_DATABASE_ID',
-            'YOUR_COURSES_COLLECTION_ID',
+            '674837fa0025a0df0540', //#endregion
+            '6748384500170afde535', //your course ID
             [
                 Appwrite.Query.equal('userId', userId)
             ]
@@ -163,8 +163,8 @@ googleLoginBtn.addEventListener('click', async () => {
         // Create OAuth2 session with Google
         await account.createOAuth2Session(
             'google',
-            'YOUR_SUCCESS_URL',  // Replace with your success URL
-            'YOUR_FAILURE_URL',  // Replace with your failure URL
+            'http://localhost:3000/auth-success',  // Replace with your success URL
+            'http://localhost:3000/auth-failure',  // Replace with your failure URL
             ['email', 'profile']
         );
     } catch (error) {
