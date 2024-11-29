@@ -1,0 +1,41 @@
+version: '3.1'
+
+services:
+  appwrite:
+    image: appwrite/appwrite:latest
+    container_name: appwrite
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - _APP_DB_HOST=mariadb
+      - _APP_DB_USER=root
+      - _APP_DB_PASS=password
+      - _APP_DB_SCHEMA=appwrite
+    depends_on:
+      - mariadb
+      - redis
+    networks:
+      - appwrite-network
+
+  mariadb:
+    image: mariadb:10.5
+    container_name: appwrite-mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: appwrite
+      MYSQL_USER: appwrite
+      MYSQL_PASSWORD: password
+    networks:
+      - appwrite-network
+
+  redis:
+    image: redis:6.2
+    container_name: appwrite-redis
+    networks:
+      - appwrite-network
+
+networks:
+  appwrite-network:
+    driver: bridge
+
