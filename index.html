@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SJSU Study Group Finder</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Appwrite SDK -->
-    <script src="https://cdn.jsdelivr.net/npm/appwrite@13.0.0"></script>
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js'
+        import { getAuth, GoogleAuthProvider } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js'
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js'
+      </script>
 </head>
 <body>
     <nav class="navbar">
@@ -87,6 +90,42 @@
                 </div>
                 <span class="units">6 units</span>
                 <a href="#" class="view-courses">View Courses ›</a>
+            </div>
+
+            <div id="messages-container" class="messages-container" style="display: none;">
+                <div class="messages-sidebar">
+                    <div class="messages-header">
+                        <h2>Messages</h2>
+                        <button id="new-message-btn" class="new-message-btn">
+                            New Message
+                        </button>
+                    </div>
+                    <div id="messages-list" class="messages-list">
+                        <p class="empty-state">No messages yet</p>
+                    </div>
+                </div>
+                
+                <div class="messages-content">
+                    <div id="thread-messages" class="thread-messages">
+                        <p class="empty-state">Select a conversation or start a new one</p>
+                    </div>
+                    <div class="message-input-container">
+                        <input type="text" id="message-input" class="message-input" placeholder="Type a message...">
+                        <button id="send-message-btn" class="send-message-btn">Send</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- New Message Modal -->
+            <div id="message-modal" class="modal">
+                <div class="modal-content">
+                    <div class="new-message-container">
+                        <h2>New Message</h2>
+                        <input type="text" id="recipient-input" class="recipient-input" placeholder="Recipient's email">
+                        <textarea id="message-input" class="message-textarea" placeholder="Type your message..."></textarea>
+                        <button id="send-message-btn" class="send-button">Send Message</button>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
